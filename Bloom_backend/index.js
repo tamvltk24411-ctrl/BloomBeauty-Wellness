@@ -11,7 +11,7 @@ const createSessionMiddleware = require("./config/session");
 const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
-
+app.set("trust proxy", 1);
 // Logger & static files
 app.use(morgan("combined"));
 app.use("/images", express.static(path.join(__dirname, "public/images")));
