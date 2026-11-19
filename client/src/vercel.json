@@ -2,8 +2,8 @@
   "outputDirectory": "dist/client/browser",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://bloombackend-nu.vercel.app/api/:path*"
+      "source": "/api/(.*)",
+      "destination": "https://bloombackend-nu.vercel.app/api/$1"
     },
     {
       "source": "/(.*)",
