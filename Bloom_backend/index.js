@@ -19,7 +19,7 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 // CORS chấp nhận cookie credentials từ frontend
 app.use(
   cors({
-    origin: ["http://localhost:4200", "http://localhost:3000"],
+    origin: ["http://localhost:4200", "http://localhost:3000", "https://bloom-beauty-wellness-client-du0bcuhky-group3bloom.vercel.app"],
     credentials: true,
   })
 );
