@@ -1,0 +1,17 @@
+{
+  "outputDirectory": "dist/client/browser",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://bloombackend-nu.vercel.app/api/$1"
+    },
+    {
+      "source": "/images/(.*)",
+      "destination": "https://bloombackend-nu.vercel.app/images/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
