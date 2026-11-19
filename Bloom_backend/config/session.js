@@ -9,6 +9,8 @@ function createSessionMiddleware() {
     throw new Error('Thiếu SESSION_SECRET. Hãy cấu hình biến này trong .env.');
   }
 
+  const isProduction = process.env.NODE_ENV === 'production';
+
   return session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -20,8 +22,8 @@ function createSessionMiddleware() {
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax'
     }
   });
 }
