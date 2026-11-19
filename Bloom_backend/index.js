@@ -12,14 +12,19 @@ const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
 app.set("trust proxy", 1);
+
 // Logger & static files
 app.use(morgan("combined"));
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-// CORS chấp nhận cookie credentials từ frontend
+// CORS chấp nhận cookie credentials từ frontend (bao gồm cả link preview và production của Vercel)
 app.use(
   cors({
-    origin: ["http://localhost:4200", "http://localhost:3000", "https://bloom-beauty-wellness-client-du0bcuhky-group3bloom.vercel.app"],
+    origin: [
+      "http://localhost:4200",
+      "http://localhost:3000",
+      /\.vercel\.app$/
+    ],
     credentials: true,
   })
 );
@@ -27,6 +32,16 @@ app.use(
 // Request body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Đảm bảo kết nối DB trước khi xử lý request trên Serverless
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use(createSessionMiddleware());
 
@@ -53,19 +68,15 @@ app.use((req, res, next) => {
 // Central error handler
 app.use(errorMiddleware);
 
-// Start listening only after MongoDB is ready.
-const PORT = process.env.PORT || 3002;
+// Xuất app cho Vercel Serverless
+module.exports = app;
 
-async function startServer() {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log("==================================================");
-    console.log(`Bloom Backend Server running on: http://localhost:${PORT}`);
-    console.log("==================================================");
+// Chỉ chạy app.listen khi chạy local
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3002;
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Bloom Backend Server running on: http://localhost:${PORT}`);
+    });
   });
 }
-
-startServer().catch((error) => {
-  console.error(`Không thể khởi động server: ${error.message}`);
-  process.exitCode = 1;
-});
